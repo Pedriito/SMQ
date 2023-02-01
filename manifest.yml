@@ -1,0 +1,19 @@
+modules:
+  jira:adminPage:
+    - key: adminpage-hello-world-admin-page
+      function: main
+      title: SMQ - NC
+  function:
+    - key: main
+      handler: index.run
+app:
+  id: ari:cloud:ecosystem::app/9bd06f2e-f502-427a-8429-450a8ba05f7c
+permissions:
+  scopes:
+    - manage:jira-configuration
+    - manage:jira-project
+    - read:field:jira 
+    - read:avatar:jira
+    - read:project-category:jira
+    - read:project:jira
+    - read:field-configuration:jira
