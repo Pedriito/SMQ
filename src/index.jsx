@@ -19,16 +19,15 @@ const App = () => {
               await screentab("Validation");
               // await getscreens();
               await getalltabs();
-
-              await test("Cause(s) identifiée(s)","com.atlassian.jira.plugin.system.customfieldtypes:textarea");
-              await test("Pôle de competence","com.atlassian.jira.plugin.system.customfieldtypes:select");
-              await test("Responsable Analyse","com.atlassian.jira.plugin.system.customfieldtypes:userpicker");
-              await test("Risque","com.atlassian.jira.plugin.system.customfieldtypes:textarea");
-              await test("Besoin CAPA","com.atlassian.jira.plugin.system.customfieldtypes:select");
-              await test("Action (s) réalisée(s) hors CAPA / Justification","com.atlassian.jira.plugin.system.customfieldtypes:textarea");
-              await test("Responsable validation chef de pôle","com.atlassian.jira.plugin.system.customfieldtypes:userpicker");
-              await test("Responsable validation QA","com.atlassian.jira.plugin.system.customfieldtypes:userpicker");
-              await test("ADN_Categorie_NC","com.atlassian.jira.plugin.system.customfieldtypes:select");
+              await CreateCustomField("Cause(s) identifiée(s)","com.atlassian.jira.plugin.system.customfieldtypes:textarea");
+              await CreateCustomField("Pôle de competence","com.atlassian.jira.plugin.system.customfieldtypes:select");
+              await CreateCustomField("Responsable Analyse","com.atlassian.jira.plugin.system.customfieldtypes:userpicker");
+              await CreateCustomField("Risque","com.atlassian.jira.plugin.system.customfieldtypes:textarea");
+              await CreateCustomField("Besoin CAPA","com.atlassian.jira.plugin.system.customfieldtypes:select");
+              await CreateCustomField("Action (s) réalisée(s) hors CAPA / Justification","com.atlassian.jira.plugin.system.customfieldtypes:textarea");
+              await CreateCustomField("Responsable validation chef de pôle","com.atlassian.jira.plugin.system.customfieldtypes:userpicker");
+              await CreateCustomField("Responsable validation QA","com.atlassian.jira.plugin.system.customfieldtypes:userpicker");
+              await CreateCustomField("ADN_Categorie_NC","com.atlassian.jira.plugin.system.customfieldtypes:select");
 
               await getfields();
               // // // Identification et Enregistrement
@@ -73,7 +72,6 @@ async function getfields(){
       "Accept": "application/json"
     }
   });
-  
   // ////console.log(`Response: ${response.status} ${response.statusText}`);
   // //console.log(await response.json());
     const array_json = await response.json();
@@ -174,7 +172,22 @@ async function issuetype() {
     console.log(Onglet);
   }
 
-  async function test(name, type, options){
+  async function CreateCustomField(name, type, options){
+    //chercher les field existant
+    const Check = await api.asUser().requestJira(route`/rest/api/2/field`, {
+      headers: {
+        "Accept": "application/json"
+      }
+    });
+    //parcourir les field existant pour voir si le field existe deja
+    const array_json = await Check.json();
+    for (const result of array_json) {
+      if (result.name == name){
+        console.log("Le field existe deja");
+        return;
+      }
+    }
+    //si le field n'existe pas on le cree
     ////
     // if(type == "com.atlassian.jira.plugin.system.customfieldtypes:select"){
     //   var bodyData = {

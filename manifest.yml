@@ -7,7 +7,7 @@ modules:
     - key: main
       handler: index.run
 app:
-  id: ari:cloud:ecosystem::app/978769c8-f988-4ce0-85ae-e66d4515b34d
+  id: ari:cloud:ecosystem::app/b4802e76-f1b8-4f9e-822a-e62aec696b44
 permissions:
   scopes:
     - manage:jira-configuration
