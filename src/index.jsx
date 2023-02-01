@@ -1,6 +1,10 @@
 import api, { route } from "@forge/api";
 import ForgeUI, { render, AdminPage, Fragment, Text, Button } from "@forge/ui";
 let Onglet = [];
+let Page = {
+  "issuetype": 0 ,
+
+}
 
 
 
@@ -10,31 +14,36 @@ const App = () => {
             
             <Button text="Click To Install NC Project" onClick={async () => 
               {
-              
-              await issuetype();
-              await screentab("Identification et Enregistrement");
-              await screentab("Cause identifiées");
-              await screentab("Risques Analysés");
-              await screentab("Traitement");
-              await screentab("Validation");
-              // await getscreens();
-              await getalltabs();
+              // creation de l'issue de l'issue type 
+              await issuetype("Issue Type NC");
+              // creation de l'issue type scheme 
+              await createissuetypescheme("Kanban Issue Type Scheme NC");
+              // ajout de l'issue type dans le issue type scheme 
+              // await addIssuetypeToscheme(issueTypeSchemeId);
+              // // 
+              // await screentab("Identification et Enregistrement");
+              // await screentab("Cause identifiées");
+              // await screentab("Risques Analysés");
+              // await screentab("Traitement");
+              // await screentab("Validation");
+              // // await getscreens();
+              // await getalltabs();
 
-              await test("Cause(s) identifiée(s)","com.atlassian.jira.plugin.system.customfieldtypes:textarea");
-              await test("Pôle de competence","com.atlassian.jira.plugin.system.customfieldtypes:select");
-              await test("Responsable Analyse","com.atlassian.jira.plugin.system.customfieldtypes:userpicker");
-              await test("Risque","com.atlassian.jira.plugin.system.customfieldtypes:textarea");
-              await test("Besoin CAPA","com.atlassian.jira.plugin.system.customfieldtypes:select");
-              await test("Action (s) réalisée(s) hors CAPA / Justification","com.atlassian.jira.plugin.system.customfieldtypes:textarea");
-              await test("Responsable validation chef de pôle","com.atlassian.jira.plugin.system.customfieldtypes:userpicker");
-              await test("Responsable validation QA","com.atlassian.jira.plugin.system.customfieldtypes:userpicker");
-              await test("ADN_Categorie_NC","com.atlassian.jira.plugin.system.customfieldtypes:select");
+              // await createfield("Cause(s) identifiée(s)","com.atlassian.jira.plugin.system.customfieldtypes:textarea");
+              // await createfield("Pôle de competence","com.atlassian.jira.plugin.system.customfieldtypes:select");
+              // await createfield("Responsable Analyse","com.atlassian.jira.plugin.system.customfieldtypes:userpicker");
+              // await createfield("Risque","com.atlassian.jira.plugin.system.customfieldtypes:textarea");
+              // await createfield("Besoin CAPA","com.atlassian.jira.plugin.system.customfieldtypes:select");
+              // await createfield("Action (s) réalisée(s) hors CAPA / Justification","com.atlassian.jira.plugin.system.customfieldtypes:textarea");
+              // await createfield("Responsable validation chef de pôle","com.atlassian.jira.plugin.system.customfieldtypes:userpicker");
+              // await createfield("Responsable validation QA","com.atlassian.jira.plugin.system.customfieldtypes:userpicker");
+              // await createfield("ADN_Categorie_NC","com.atlassian.jira.plugin.system.customfieldtypes:select");
 
-              await getfields();
-              // // // Identification et Enregistrement
-              await addFieldToScreenTab(1,Onglet[0],"Résumé");
-              await addFieldToScreenTab(1,Onglet[0],"Description");
-              await addFieldToScreenTab(1,Onglet[0],"Responsable");
+              // await getfields();
+              // // // // Identification et Enregistrement
+              // await addFieldToScreenTab(1,Onglet[0],"Résumé");
+              // await addFieldToScreenTab(1,Onglet[0],"Description");
+              // await addFieldToScreenTab(1,Onglet[0],"Responsable");
               // await addFieldToScreenTab(1,Onglet[0],"ADN_Categorie_NC");
               // // // Cause identifiées
               // await addFieldToScreenTab(1,10031,"Cause(s) identifiée(s)");
@@ -55,11 +64,6 @@ const App = () => {
               // await addFieldToScreenTab(1,Onglet[3],"Responsable validation QA");
               
             }
-              }/>
-              <Button text =" Bouton TEST " onClick={
-                async () => {
-
-              }
               }/>
         </Fragment>
     );
@@ -99,9 +103,9 @@ async function getfields(){
 }
 
 
-async function issuetype() {
+async function issuetype(name) {
     var bodyData = `{
-        "name": "Issue Type NC",
+        "name": "${name}",
         "description": "From FORGE ",
         "type": "standard"
       }`; 
@@ -114,10 +118,57 @@ async function issuetype() {
         },
         body: bodyData
       });
-    //console.log("Issue Type")
-    //console.log(`Response: ${response.status} ${response.statusText}`);
-    //console.log(await response.json());  
+    console.log("Issue Type")
+    console.log(`Response: ${response.status} ${response.statusText}`);
+    console.log(await response.json());  
+    console.log("/////////////////////////");
 
+  }
+  async function createissuetypescheme(name) {
+    var bodyData = `{
+      "defaultIssueTypeId": "10000",
+      "issueTypeIds": [
+      "10000"
+    ],
+    "name": "${name}",
+    "description": "From Forge."
+}`;
+
+    const response = await api
+      .asUser()
+      .requestJira(route`/rest/api/3/issuetypescheme`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: bodyData,
+      });
+    console.log("Issue Type Scheme");
+    console.log(`Response: ${response.status} ${response.statusText}`);
+    Page.issueTypeSchemeId.push(await response.json());
+    console.log(Page);
+    console.log("/////////////////////////");
+    
+  }
+  async function addIssuetypeToscheme(issueTypeSchemeId){
+    var bodyData = `{
+      "issueTypeIds": [
+        "10000"
+      ]
+    }`;
+    
+    const response = await api.asUser().requestJira(route`/rest/api/3/issuetypescheme/${issueTypeSchemeId}/issuetype`, {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: bodyData
+    });
+    
+    console.log(`Response: ${response.status} ${response.statusText}`);
+    console.log(await response.json());
   }
 
   async function screentab (name){
@@ -174,30 +225,8 @@ async function issuetype() {
     console.log(Onglet);
   }
 
-  async function test(name, type, options){
-    ////
-    // if(type == "com.atlassian.jira.plugin.system.customfieldtypes:select"){
-    //   var bodyData = {
-    //     "name": name,
-    //     "description": type,
-    //     "type": type,
-    //     "options": [
-    //       {
-    //         "disable" : false,
-    //         "value" : 1,
-    //       },
-    //       {
-    //         "disable" : false,
-    //         "value" : 2,
-    //       },
-    //       {
-    //         "disable" : false,
-    //         "value" : 3,
-    //       },
-    //     ]
-    //   };
-    // }
-
+  async function createfield(name, type, options){
+  
       var bodyData = `{
         "name": "${name}",
         "description": "${type}",
