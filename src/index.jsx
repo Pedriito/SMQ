@@ -325,6 +325,10 @@ async function createScreenScheme(name) {
           {
             "issueTypeId": "default",
             "screenSchemeId": ScreenSchemeidDefault
+          },
+          {
+            "issueTypeId": issue_type,
+            "screenSchemeId": ScreenSchemeid
           }
         ]
     };
