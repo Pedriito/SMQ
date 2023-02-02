@@ -1,8 +1,7 @@
 import api, { route } from "@forge/api";
 import ForgeUI, { render, AdminPage, Fragment, Text, Button } from "@forge/ui";
 let Onglet = [];
-
-
+let screenid = 0;
 
 const App = () => {
     return (
@@ -10,14 +9,24 @@ const App = () => {
             
             <Button text="Click To Install NC Project" onClick={async () => 
               {
-              
+
+ 
               await issuetype();
+              await createScreen("NC Project");
+              console.log(screenid);
+              console.log(screenid);
+              console.log(screenid);
+              console.log(screenid);
+              console.log(screenid);
+              console.log(screenid);
+              console.log(screenid);
+              console.log(screenid);
+              await createScreenScheme("NC Project Scheme");
               await screentab("Identification et Enregistrement");
               await screentab("Cause identifiées");
               await screentab("Risques Analysés");
               await screentab("Traitement");
               await screentab("Validation");
-              // await getscreens();
               await getalltabs();
               await CreateCustomField("Cause(s) identifiée(s)","com.atlassian.jira.plugin.system.customfieldtypes:textarea");
               await CreateCustomField("Pôle de competence","com.atlassian.jira.plugin.system.customfieldtypes:select");
@@ -91,8 +100,8 @@ async function getfields(){
         case "ADN_Categorie_NC": await addFieldToScreenTab(1,Onglet[0],result.id);
       }
     }
-    console.log(`Response: ${response.status} ${response.statusText}`);
-    console.log(response.json);
+    //console.log(`Response: ${response.status} ${response.statusText}`);
+    //console.log(response.json);
     
 }
 
@@ -152,8 +161,8 @@ async function issuetype() {
       body: bodyData
     });
   
-    console.log(`Response: ${response.status} ${response.statusText}`);
-    console.log(await response.json());
+    //console.log(`Response: ${response.status} ${response.statusText}`);
+    //console.log(await response.json());
   }
   
   async function getalltabs (){
@@ -169,7 +178,7 @@ async function issuetype() {
     for (const onglet of onglet_id){
       Onglet.push(onglet.id);
     }
-    console.log(Onglet);
+    //console.log(Onglet);
   }
 
   async function CreateCustomField(name, type, options){
@@ -183,7 +192,7 @@ async function issuetype() {
     const array_json = await Check.json();
     for (const result of array_json) {
       if (result.name == name){
-        console.log("Le field existe deja");
+        //console.log("Le field existe deja");
         return;
       }
     }
@@ -230,8 +239,62 @@ async function issuetype() {
  
     
     }
+    async function createScreen(name){
+      var bodyData = `{
+        "name": "${name}",
+        "description": "Created from Forge"
+      }`;
+      
+      const response = await api.asUser().requestJira(route`/rest/api/2/screens`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: bodyData
+      });
+      const screen = await response.json();
+      screenid = screen.id;
+      //mettre dans screenid l'id du screen cree
+      console.log(`eh je suis le screen avec l'id ${screenid}`);
+      console.log(await response.json());
+    }
+async function createScreenScheme(name) {
+  await getallscreen();
 
-  
+  var bodyData = {
+    "screens": {
+      "default": screenid,
+    },
+    "name": "NC test screen scheme",
+    "description": "Manage employee data"
+  };
+  //convertir le body en json
+  bodyData = JSON.stringify(bodyData);
+
+  const response = await api.asUser().requestJira(route`/rest/api/2/screenscheme`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: bodyData
+  });
+  console.log(`eh je suis le screen scheme avec l'id ${screenid}`);
+console.log(`ezjahdjhdqjhdqjhjdsqhgjdqGDKQGDQHJKQGFFFFFFFQFGHSQGFHSDJGFDSQHJKFGSDQFHJGQSJFHBSDQHFBSDHCBHJEQBHEZHYBCCHSBCHJbhcjsbqkcqhbscqeuzbyucBCSDHBKBCSQHUBSQUEYBESQCHBSQCDKHBDCSHK`);
+console.log(`Response: ${response.status} ${response.statusText}`);
+console.log(await response.json());
+    }
+    async function getallscreen(){
+      const response = await api.asUser().requestJira(route`/rest/api/2/screens`, {
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      //parsours la reponse pour recuperer les id des screens
+      //console.log(`Response: ${response.status} ${response.statusText}`);
+      //console.log(await response.json());
+    }
 
 export const run = render(
     <AdminPage>
