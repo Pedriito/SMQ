@@ -17,3 +17,8 @@ permissions:
     - read:project-category:jira
     - read:project:jira
     - read:field-configuration:jira
+    - read:jira-work
+    - read:issue-type:jira
+    - read:avatar:jira
+    - read:project-category:jira
+    - read:project:jira

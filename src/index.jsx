@@ -2,6 +2,10 @@ import api, { route } from "@forge/api";
 import ForgeUI, { render, AdminPage, Fragment, Text, Button } from "@forge/ui";
 let Onglet = [];
 let screenid = 0;
+let IssueType;
+let ScreenScheme;
+let ScreenSchemeid = 0;
+let ScreenSchemeidDefault = 0;
 
 const App = () => {
     return (
@@ -9,9 +13,10 @@ const App = () => {
             
             <Button text="Click To Install NC Project" onClick={async () => 
               {
-
- 
+                
+              await getallscreenscheme();
               await issuetype();
+              getallissuetype();
               await createScreen("NC Project");
               console.log(screenid);
               console.log(screenid);
@@ -22,6 +27,7 @@ const App = () => {
               console.log(screenid);
               console.log(screenid);
               await createScreenScheme("NC Project Scheme");
+              CreateIssueTypeScreenScheme("NC Project Scheme");
               await screentab("Identification et Enregistrement");
               await screentab("Cause identifiées");
               await screentab("Risques Analysés");
@@ -121,11 +127,14 @@ async function issuetype() {
         },
         body: bodyData
       });
+      //donner a issuetype la reponse
+      issuetype = await response.json();
     //console.log("Issue Type")
     //console.log(`Response: ${response.status} ${response.statusText}`);
     //console.log(await response.json());  
 
   }
+  
 
   async function screentab (name){
     var bodyData = `{
@@ -255,9 +264,9 @@ async function issuetype() {
       });
       const screen = await response.json();
       screenid = screen.id;
-      //mettre dans screenid l'id du screen cree
-      console.log(`eh je suis le screen avec l'id ${screenid}`);
-      console.log(await response.json());
+      // //mettre dans screenid l'id du screen cree
+      // console.log(`eh je suis le screen avec l'id ${screenid}`);
+      // console.log(await response.json());
     }
 async function createScreenScheme(name) {
   await getallscreen();
@@ -280,10 +289,12 @@ async function createScreenScheme(name) {
     },
     body: bodyData
   });
-  console.log(`eh je suis le screen scheme avec l'id ${screenid}`);
-console.log(`ezjahdjhdqjhdqjhjdsqhgjdqGDKQGDQHJKQGFFFFFFFQFGHSQGFHSDJGFDSQHJKFGSDQFHJGQSJFHBSDQHFBSDHCBHJEQBHEZHYBCCHSBCHJbhcjsbqkcqhbscqeuzbyucBCSDHBKBCSQHUBSQUEYBESQCHBSQCDKHBDCSHK`);
-console.log(`Response: ${response.status} ${response.statusText}`);
-console.log(await response.json());
+  ScreenScheme = await response.json();
+  ScreenSchemeid = ScreenScheme.id;
+//   console.log(`eh je suis le screen scheme avec l'id ${screenid}`);
+// console.log(`ezjahdjhdqjhdqjhjdsqhgjdqGDKQGDQHJKQGFFFFFFFQFGHSQGFHSDJGFDSQHJKFGSDQFHJGQSJFHBSDQHFBSDHCBHJEQBHEZHYBCCHSBCHJbhcjsbqkcqhbscqeuzbyucBCSDHBKBCSQHUBSQUEYBESQCHBSQCDKHBDCSHK`);
+// console.log(`Response: ${response.status} ${response.statusText}`);
+// console.log(await response.json());
     }
     async function getallscreen(){
       const response = await api.asUser().requestJira(route`/rest/api/2/screens`, {
@@ -294,6 +305,64 @@ console.log(await response.json());
       //parsours la reponse pour recuperer les id des screens
       //console.log(`Response: ${response.status} ${response.statusText}`);
       //console.log(await response.json());
+    }
+    async function CreateIssueTypeScreenScheme(name){
+      console.log("je suis dans la fonction");
+
+      //met dans une variable l'issue type Issue Type NC
+      var issue_type = 0;
+      for (const issuetype of IssueType){
+        if (issuetype.name == "Issue Type NC"){
+          issue_type = issuetype.id;   
+        }
+      }
+      console.log(issue_type);
+      console.log(ScreenSchemeid);
+      //pareil pour le screen scheme
+      var bodyData = {
+        "name": "NC issue type screen scheme",
+        "issueTypeMappings": [
+          {
+            "issueTypeId": "default",
+            "screenSchemeId": ScreenSchemeidDefault
+          }
+        ]
+    };
+    bodyData = JSON.stringify(bodyData);
+    const response = await api.asUser().requestJira(route`/rest/api/2/issuetypescreenscheme`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: bodyData
+    });
+    console.log(`Response: ${response.status} ${response.statusText}`);
+    console.log(await response.json());
+  }
+    async function getallscreenscheme(){
+      console.log("je suis dans la fonction2");
+      const response = await api.asUser().requestJira(route`/rest/api/2/screenscheme`, {
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      //donner a la variable ScreenScheme la reponse
+      ScreenScheme = await response.json();
+      console.log(ScreenScheme);
+      ScreenSchemeidDefault = ScreenScheme.values[0].id;
+      console.log(`Response: ${response.status} ${response.statusText}`);
+    }
+    async function getallissuetype(){
+      console.log("je suis dans la fonction3");
+      const response = await api.asUser().requestJira(route`/rest/api/2/issuetype`, {
+        headers: {
+          'Accept': 'application/json'
+        }
+      });
+      //donner a la variable IssueType la reponse
+      IssueType = await response.json();
+      console.log(`Response: ${response.status} ${response.statusText}`);
     }
 
 export const run = render(
