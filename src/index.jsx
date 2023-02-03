@@ -1,5 +1,6 @@
 import api, { route } from "@forge/api";
-import ForgeUI, { render, AdminPage, Fragment, Text, Button } from "@forge/ui";
+import {FormField } from '@atlaskit/select';
+import ForgeUI, { render, AdminPage, Fragment, Text, Button, useState, Select, Form  } from "@forge/ui";
 let Onglet = [];
 let screenid = 0;
 let IssueType;
@@ -8,6 +9,12 @@ let ScreenSchemeid = 0;
 let ScreenSchemeidDefault = 0;
 
 const App = () => {
+const [selectedProject, setSelectedProject] = useState(null);
+const options = [
+    { value: '1', label: 'Project 1' },
+    { value: '2', label: 'Project 2' },
+    { value: '3', label: 'Project 3' },
+];
     return (
         <Fragment>      
             
@@ -75,6 +82,14 @@ const App = () => {
 
               }
               }/>
+               <Form>
+        <Select
+          options={options}
+          value={selectedProject}
+          onChange={(option) => setSelectedProject(option)}
+          name="Select project"
+        />
+    </Form>
         </Fragment>
     );
 };
