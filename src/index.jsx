@@ -1,5 +1,5 @@
 import api, { route } from "@forge/api";
-import ForgeUI, { render, AdminPage, Fragment, Text, Button } from "@forge/ui";
+import ForgeUI, { render, AdminPage, Fragment, Text, Button, useState, Select, Form } from "@forge/ui";
 
 // Variables golables
 
@@ -12,22 +12,38 @@ let workflowName;
 
 
 const App = () => {
+  var options  = [
+    {value :'1', label :'Project 1'},
+    {value :'2', label :'Project 2'},
+    {value :'3', label :'Project 3'},    
+    {value :'4', label :'Project 4'},
+  ];
+  const [selectedProject, setSelectedProject] = useState(options[0]);
+
     return (
-        <Fragment>      
-            
-            <Button text="Click To Install NC Project" onClick={async () => 
-              {
-              // creation de l'issue de l'issue type 
-              await createIssueType("Issue Type NC");
-              // creation de l'issue type scheme
-              await createIssueTypeScheme("Kanban Issue type Scheme NC");
-              // créaction du workflow
-              await createWorkflow("Workflow NC");
-              // créaction du workflow scheme
-              await createWorkflowScheme("Workflow Scheme NC");
-            }
-              }/>
-        </Fragment>
+      <Fragment>
+        <Button
+          text="Click To Install NC Project"
+          onClick={async () => {
+            // creation de l'issue de l'issue type
+            await createIssueType("Issue Type NC");
+            // creation de l'issue type scheme
+            await createIssueTypeScheme("Kanban Issue type Scheme NC");
+            // créaction du workflow
+            await createWorkflow("Workflow NC");
+            // créaction du workflow scheme
+            await createWorkflowScheme("Workflow Scheme NC");
+          }}
+        />
+       <Form>
+        <Select
+          options={options}
+          value= {selectedProject} 
+          onChange={(option) => setSelectedProject(option)}
+          name="Select project"
+        />
+    </Form>
+      </Fragment>
     );
 };
 
