@@ -94,11 +94,11 @@ const App = () => {
           await getalltabs();
           await getfields();
           // // // Identification et Enregistrement
-          await addFieldToScreenTab(screenid, Onglet[0], "Résumé");
-          await addFieldToScreenTab(screenid, Onglet[0], "Description");
-          await addFieldToScreenTab(screenid, Onglet[0], "Responsable");
-          await addFieldToScreenTab(screenid, Onglet[3], "Pièce jointe");
-          await addFieldToScreenTab(screenid, Onglet[3], "Tickets liés");
+          await addFieldToScreenTab(screenid, Onglet[1], "Résumé");
+          await addFieldToScreenTab(screenid, Onglet[1], "Description");
+          await addFieldToScreenTab(screenid, Onglet[1], "Responsable");
+          await addFieldToScreenTab(screenid, Onglet[4], "Pièce jointe");
+          await addFieldToScreenTab(screenid, Onglet[4], "Tickets liés");
           // créaction du workflow
           await createWorkflow("Workflow NC");
           // créaction du workflow scheme
@@ -372,7 +372,7 @@ async function getallscreenscheme() {
 async function getalltabs() {
   const response = await api
     .asUser()
-    .requestJira(route`/rest/api/3/screens/1/tabs`, {
+    .requestJira(route`/rest/api/3/screens/${screenid}/tabs`, {
       headers: {
         Accept: "application/json",
       },
@@ -398,23 +398,23 @@ async function getfields() {
     json.push(result.id);
     switch (result.name) {
       case "Cause(s) identifiée(s)":
-        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+        await addFieldToScreenTab(screenid, Onglet[2], result.id);
       case "Pôle de competence":
-        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+        await addFieldToScreenTab(screenid, Onglet[2], result.id);
       case "Responsable Analyse":
-        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+        await addFieldToScreenTab(screenid, Onglet[2], result.id);
       case "Risque":
-        await addFieldToScreenTab(screenid, Onglet[2], result.id);
+        await addFieldToScreenTab(screenid, Onglet[3], result.id);
       case "Besoin CAPA":
-        await addFieldToScreenTab(screenid, Onglet[2], result.id);
+        await addFieldToScreenTab(screenid, Onglet[3], result.id);
       case "Action (s) réalisée(s) hors CAPA / Justification":
-        await addFieldToScreenTab(screenid, Onglet[3], result.id);
+        await addFieldToScreenTab(screenid, Onglet[4], result.id);
       case "Responsable validation chef de pôle":
-        await addFieldToScreenTab(screenid, Onglet[3], result.id);
+        await addFieldToScreenTab(screenid, Onglet[5], result.id);
       case "Responsable validation QA":
-        await addFieldToScreenTab(screenid, Onglet[3], result.id);
+        await addFieldToScreenTab(screenid, Onglet[5], result.id);
       case "ADN_Categorie_NC":
-        await addFieldToScreenTab(screenid, Onglet[0], result.id);
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
     }
   }
 }
