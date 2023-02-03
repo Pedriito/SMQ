@@ -9,14 +9,24 @@ let ScreenSchemeid = 0;
 let ScreenSchemeidDefault = 0;
 
 const App = () => {
-const [selectedProject, setSelectedProject] = useState(null);
-const options = [
+  const project = [
     { value: '1', label: 'Project 1' },
     { value: '2', label: 'Project 2' },
     { value: '3', label: 'Project 3' },
 ];
+console.log(project[0]);
+const [selectedProject, setSelectedProject] = useState(project[0]);
+
     return (
-        <Fragment>      
+        <Fragment>   
+                   <Form>
+        <Select
+          options={project}
+          value={selectedProject}
+          onChange={(option) => setSelectedProject(option)}
+          name="Select project"
+        />
+    </Form>   
             
             <Button text="Click To Install NC Project" onClick={async () => 
               {
@@ -82,14 +92,7 @@ const options = [
 
               }
               }/>
-               <Form>
-        <Select
-          options={options}
-          value={selectedProject}
-          onChange={(option) => setSelectedProject(option)}
-          name="Select project"
-        />
-    </Form>
+    
         </Fragment>
     );
 };
