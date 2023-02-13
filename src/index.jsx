@@ -2,13 +2,16 @@ import api, { route } from "@forge/api";
 import ForgeUI, {
   render,
   AdminPage,
+  Button,
+  Select,
   Fragment,
   Text,
-  Button,
-  useState,
-  Select,
   Form,
+  Option,
+  useState,
+  useEffect,
 } from "@forge/ui";
+
 
 // Variables golables
 
@@ -23,18 +26,32 @@ let IssueType;
 let ScreenScheme;
 let ScreenSchemeid = 0;
 let ScreenSchemeidDefault = 0;
+let project = 0;
 
 const App = () => {
-  var options = [
-    { value: "1", label: "Project 1" },
-    { value: "2", label: "Project 2" },
-    { value: "3", label: "Project 3" },
-    { value: "4", label: "Project 4" },
-  ];
-  const [selectedProject, setSelectedProject] = useState(options[0]);
+  //mettre dans option les projet avec la fonction getallproject
+  const [options, setOptions] = useState([]);
+  useEffect(async () => {
+    console.log("useEffect");
+    await getAllProject().then((data) => {
+      setOptions(data);
+    });
+  }, []);
 
   return (
     <Fragment>
+    <Form onSubmit={async (formData) => {
+        console.log(formData);
+        project = formData.project;
+        console.log(project);
+        main();
+      }}>
+          <Select label="Select Project" name="project">
+            {options.map((option) => (
+              <Option value={option.id} label={option.name} />
+            ))}
+          </Select>
+      </Form>
       <Button
         text="Click To Install NC Project"
         onClick={async () => {
@@ -94,31 +111,89 @@ const App = () => {
           await getalltabs();
           await getfields();
           // // // Identification et Enregistrement
-          await addFieldToScreenTab(screenid, Onglet[1], "Résumé");
-          await addFieldToScreenTab(screenid, Onglet[1], "Description");
-          await addFieldToScreenTab(screenid, Onglet[1], "Responsable");
-          await addFieldToScreenTab(screenid, Onglet[4], "Pièce jointe");
-          await addFieldToScreenTab(screenid, Onglet[4], "Tickets liés");
+          await addFieldToScreenTab(screenid, Onglet[0], "Résumé");
+          await addFieldToScreenTab(screenid, Onglet[0], "Description");
+          await addFieldToScreenTab(screenid, Onglet[0], "Responsable");
+          await addFieldToScreenTab(screenid, Onglet[3], "Pièce jointe");
+          await addFieldToScreenTab(screenid, Onglet[3], "Tickets liés");
           // créaction du workflow
           await createWorkflow("Workflow NC");
           // créaction du workflow scheme
           await createWorkflowScheme("Workflow Scheme NC");
         }}
       />
-      <Form>
-        <Select
-          options={options}
-          value={selectedProject}
-          onChange={(option) => setSelectedProject(option)}
-          name="Select project"
-        />
-      </Form>
     </Fragment>
   );
 };
 
 // ISSUE TYPE FUNCTIONS
-
+async function main(){
+  // creation de l'issue de l'issue type
+  await createIssueType("Issue Type NC");
+  // creation de l'issue type scheme
+  await createIssueTypeScheme("Kanban Issue type Scheme NC");
+  // creation des fields
+  await CreateCustomField(
+    "Cause(s) identifiée(s)",
+    "com.atlassian.jira.plugin.system.customfieldtypes:textarea"
+  );
+  await CreateCustomField(
+    "Pôle de competence",
+    "com.atlassian.jira.plugin.system.customfieldtypes:select"
+  );
+  await CreateCustomField(
+    "Responsable Analyse",
+    "com.atlassian.jira.plugin.system.customfieldtypes:userpicker"
+  );
+  await CreateCustomField(
+    "Risque",
+    "com.atlassian.jira.plugin.system.customfieldtypes:textarea"
+  );
+  await CreateCustomField(
+    "Besoin CAPA",
+    "com.atlassian.jira.plugin.system.customfieldtypes:select"
+  );
+  await CreateCustomField(
+    "Action (s) réalisée(s) hors CAPA / Justification",
+    "com.atlassian.jira.plugin.system.customfieldtypes:textarea"
+  );
+  await CreateCustomField(
+    "Responsable validation chef de pôle",
+    "com.atlassian.jira.plugin.system.customfieldtypes:userpicker"
+  );
+  await CreateCustomField(
+    "Responsable validation QA",
+    "com.atlassian.jira.plugin.system.customfieldtypes:userpicker"
+  );
+  await CreateCustomField(
+    "ADN_Categorie_NC",
+    "com.atlassian.jira.plugin.system.customfieldtypes:select"
+  );
+  // Creation des screens
+  await getallscreenscheme();
+  getallissuetype();
+  await createScreen("NC Project");
+  console.log(screenid);
+  await createScreenScheme("NC Project Scheme");
+  CreateIssueTypeScreenScheme("NC Project Scheme");
+  await screentab("Identification et Enregistrement");
+  await screentab("Cause identifiées");
+  await screentab("Risques Analysés");
+  await screentab("Traitement");
+  await screentab("Validation");
+  await getalltabs();
+  await getfields();
+  // // // Identification et Enregistrement
+  await addFieldToScreenTab(screenid, Onglet[0], "Résumé");
+  await addFieldToScreenTab(screenid, Onglet[0], "Description");
+  await addFieldToScreenTab(screenid, Onglet[0], "Responsable");
+  await addFieldToScreenTab(screenid, Onglet[3], "Pièce jointe");
+  await addFieldToScreenTab(screenid, Onglet[3], "Tickets liés");
+  // créaction du workflow
+  await createWorkflow("Workflow NC");
+  // créaction du workflow scheme
+  await createWorkflowScheme("Workflow Scheme NC");
+}
 async function createIssueType(name) {
   var body = JSON.stringify({
     name,
@@ -378,7 +453,7 @@ async function getalltabs() {
       },
     });
 
- 
+
   const onglet_id = await response.json();
   for (const onglet of onglet_id) {
     Onglet.push(onglet.id);
@@ -398,23 +473,23 @@ async function getfields() {
     json.push(result.id);
     switch (result.name) {
       case "Cause(s) identifiée(s)":
-        await addFieldToScreenTab(screenid, Onglet[2], result.id);
-      case "Pôle de competence":
-        await addFieldToScreenTab(screenid, Onglet[2], result.id);
-      case "Responsable Analyse":
-        await addFieldToScreenTab(screenid, Onglet[2], result.id);
-      case "Risque":
-        await addFieldToScreenTab(screenid, Onglet[3], result.id);
-      case "Besoin CAPA":
-        await addFieldToScreenTab(screenid, Onglet[3], result.id);
-      case "Action (s) réalisée(s) hors CAPA / Justification":
-        await addFieldToScreenTab(screenid, Onglet[4], result.id);
-      case "Responsable validation chef de pôle":
-        await addFieldToScreenTab(screenid, Onglet[5], result.id);
-      case "Responsable validation QA":
-        await addFieldToScreenTab(screenid, Onglet[5], result.id);
-      case "ADN_Categorie_NC":
         await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      case "Pôle de competence":
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      case "Responsable Analyse":
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      case "Risque":
+        await addFieldToScreenTab(screenid, Onglet[2], result.id);
+      case "Besoin CAPA":
+        await addFieldToScreenTab(screenid, Onglet[2], result.id);
+      case "Action (s) réalisée(s) hors CAPA / Justification":
+        await addFieldToScreenTab(screenid, Onglet[3], result.id);
+      case "Responsable validation chef de pôle":
+        await addFieldToScreenTab(screenid, Onglet[3], result.id);
+      case "Responsable validation QA":
+        await addFieldToScreenTab(screenid, Onglet[3], result.id);
+      case "ADN_Categorie_NC":
+        await addFieldToScreenTab(screenid, Onglet[0], result.id);
     }
   }
 }
@@ -463,6 +538,19 @@ async function CreateCustomField(name, type, options) {
     },
     body: bodyData,
   });
+}
+async function getAllProject() {
+  const response = await api.asUser().requestJira(route`/rest/api/3/project`, {
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+  //fill le select avec les projets
+  console.log(`Response: ${response.status} ${response.statusText}`);
+  console.log(await response.json());
+  //renvoyer la reponse la data 
+  return await response.json();
+
 }
 
 export const run = render(
