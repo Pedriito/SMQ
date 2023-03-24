@@ -19,3 +19,6 @@ permissions:
     - read:project:jira
     - read:field-configuration:jira
     - read:issue-type:jira
+    - write:jira-work
+    - delete:issue:jira
+
