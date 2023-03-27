@@ -164,7 +164,8 @@ const App = () => {
               await CreateCustomField(
                 "Pôle de competence",
                 "com.atlassian.jira.plugin.system.customfieldtypes:select",
-                "ADN_NC Pôle de competence"
+                "ADN_NC Pôle de competence",
+                ["Qualité", "Agilité","Sérialisation", "Ingénierie système"]
               );
               await CreateCustomField(
                 "Responsable Analyse",
@@ -1047,25 +1048,31 @@ async function addFieldToScreenTab(screenId, tabId, fieldId) {
     console.log(`Response addFieldToScreenTab `);
   }
 }
-async function CreateCustomField(name, type, description) {
-  //chercher les field existant
+async function CreateCustomField(name, type, description, options) {
+  // Chercher les champs existants
   const Check = await api.asUser().requestJira(route`/rest/api/2/field`, {
     headers: {
       Accept: "application/json",
     },
   });
-  //parcourir les field existant pour voir si le field existe deja
+  // Parcourir les champs existants pour voir si le champ existe déjà
   const array_json = await Check.json();
   for (const result of array_json) {
     if (result.name == name) {
       return;
     }
   }
-  var bodyData = `{
-      "name": "${name}",
-      "description": "${description}",
-      "type": "${type}"
-    },`;
+
+  // Préparer le corps de la requête en fonction des options fournies
+  let bodyData = {
+    name: name,
+    description: description,
+    type: type
+  };
+
+  if (options && options.length > 0) {
+    bodyData.options = options;
+  }
 
   const response = await api.asUser().requestJira(route`/rest/api/2/field`, {
     method: "POST",
@@ -1073,9 +1080,10 @@ async function CreateCustomField(name, type, description) {
       Accept: "application/json",
       "Content-Type": "application/json",
     },
-    body: bodyData,
+    body: JSON.stringify(bodyData),
   });
-  console.log(`Response CreateCustomField `);
+
+  console.log(`Response CreateCustomField`);
 }
 async function getAllProject() {
   const response = await api.asUser().requestJira(route`/rest/api/2/project`, {
