@@ -1,4 +1,4 @@
-import api, { route } from "@forge/api";
+import api, { requestConfluence, route } from "@forge/api";
 import ForgeUI, {
   render,
   AdminPage,
@@ -35,6 +35,8 @@ let issueTypeIdCAPA;
 let issueTypeIdNC;
 let ScreenSchemeidNC;
 let ScreenSchemeidCAPA;
+let screens;
+let projectId;
 
 const App = () => {
   const [options, setOptions] = useState([]);
@@ -51,23 +53,25 @@ const App = () => {
         onSubmit={async (formData) => {
           project = formData.project;
           install = formData.Install;
+          console.log(project);
+
           /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            CapaOrNC = "CAPA";
-            ///////////////////////////////////////////////////////////////////////CAPA/////////////////////////////////////
-              console.log("creation de l'issue type")
-              await createIssueType("Issue Type CAPA");
-              // creation de l'issue type scheme
-              console.log("Creation de l'issue type scheme")
-              await createIssueTypeSchemeCAPANC("Kanban Issue type Scheme CAPA/NC", "Issue Type CAPA", "Issue Type NC");
-              await AssignIssueTypeSchemeToProject(project, "Kanban Issue type Scheme CAPA/NC");
-              // creation des fields
-              console.log("Creation des fields")
-              await CreateCustomField(
-                "JeSuisLeTest",
-                "com.atlassian.jira.plugin.system.customfieldtypes:select",
-                "ADN_NC CAPA Domaines Impactés",
-                ["Production", "Qualité", "Sécurité", "Environnement", "Autre"]
-              );
+            // CapaOrNC = "CAPA";
+            // ///////////////////////////////////////////////////////////////////////CAPA/////////////////////////////////////
+            //   console.log("creation de l'issue type")
+              // await createIssueType("Issue Type CAPA");
+            //   // creation de l'issue type scheme
+            //   console.log("Creation de l'issue type scheme")
+            //   await createIssueTypeSchemeCAPANC("Kanban Issue type Scheme CAPA/NC", "Issue Type CAPA", "Issue Type NC");
+            //   await AssignIssueTypeSchemeToProject(project, "Kanban Issue type Scheme CAPA/NC");
+            //   // creation des fields
+            //   console.log("Creation des fields")
+            //   await CreateCustomField(
+            //     "JeSuisLeTest",
+            //     "com.atlassian.jira.plugin.system.customfieldtypes:select",
+            //     "ADN_NC CAPA Domaines Impactés",
+            //     ["Production", "Qualité", "Sécurité", "Environnement", "Autre"]
+            //   );
               // await CreateCustomField(
               //   "CAPA Domaines Impactés",
               //   "com.atlassian.jira.plugin.system.customfieldtypes:select",
@@ -140,28 +144,207 @@ const App = () => {
             //   console.log(error);
             // }
             ///////////////////////////////////////////////////////////////////////NC/////////////////////////////////////
-            issuetypeName = undefined;
-            issueTypeSchemeId = undefined;
-            issueTypeId = undefined;
-            workflowId = undefined;
-            workflowName = undefined;
-            Onglet = [];
-            screenid = 0;
-            IssueType = undefined;
-            ScreenScheme = undefined;
-            ScreenSchemeid = 0;
-            ScreenSchemeidDefault = 0;
-            IssueTypeScreenSchemeID = undefined;
-            workflowSchemeID = undefined;
-            install = undefined;
-            CapaOrNC = "NC";
-            try {
-              await createIssueType("Issue Type NC");
+            // issuetypeName = undefined;
+            // issueTypeSchemeId = undefined;
+            // issueTypeId = undefined;
+            // workflowId = undefined;
+            // workflowName = undefined;
+            // Onglet = [];
+            // screenid = 0;
+            // IssueType = undefined;
+            // ScreenScheme = undefined;
+            // ScreenSchemeid = 0;
+            // ScreenSchemeidDefault = 0;
+            // IssueTypeScreenSchemeID = undefined;
+            // workflowSchemeID = undefined;
+            // install = undefined;
+            // CapaOrNC = "NC";
+            // try {
+            //   await createIssueType("Issue Type NC");
+            //   // creation de l'issue type scheme
+            //   await createIssueTypeSchemeCAPANC("Kanban Issue type Scheme CAPA/NC", "Issue Type CAPA", "Issue Type NC");
+            //   await AssignIssueTypeSchemeToProject(project, "Kanban Issue type Scheme CAPA/NC");
+            //   //creation des fields
+            //   await CreateCustomField(
+            //     "Cause(s) identifiée(s)",
+            //     "com.atlassian.jira.plugin.system.customfieldtypes:textarea",
+            //     "ADN_NC Cause(s) identifiée(s)"
+            //   );
+            //   await CreateCustomField(
+            //     "Pôle de competence",
+            //     "com.atlassian.jira.plugin.system.customfieldtypes:select",
+            //     "ADN_NC Pôle de competence",
+            //     ["Qualité", "Agilité","Sérialisation", "Ingénierie système"]
+            //   );
+            //   await CreateCustomField(
+            //     "Responsable Analyse",
+            //     "com.atlassian.jira.plugin.system.customfieldtypes:userpicker",
+            //     "ADN_NC Responsable Analyse"
+            //   );
+            //   await CreateCustomField(
+            //     "Risque",
+            //     "com.atlassian.jira.plugin.system.customfieldtypes:textarea",
+            //     "ADN_NC Risque"
+            //   );
+            //   await CreateCustomField(
+            //     "Besoin CAPA",
+            //     "com.atlassian.jira.plugin.system.customfieldtypes:select",
+            //     "ADN_NC Besoin CAPA",
+            //     ["Oui", "Non"]
+            //   );
+            //   await CreateCustomField(
+            //     "Action (s) réalisée(s) hors CAPA / Justification",
+            //     "com.atlassian.jira.plugin.system.customfieldtypes:textarea",
+            //     "ADN_NC Action (s) réalisée(s) hors CAPA / Justification"
+            //   );
+            //   await CreateCustomField(
+            //     "Responsable validation chef de pôle",
+            //     "com.atlassian.jira.plugin.system.customfieldtypes:userpicker",
+            //     "ADN_NC Responsable validation chef de pôle"
+            //   );
+            //   await CreateCustomField(
+            //     "Responsable validation QA",
+            //     "com.atlassian.jira.plugin.system.customfieldtypes:userpicker",
+            //     "ADN_NC Responsable validation QA"
+            //   );
+            //   await CreateCustomField(
+            //     "Categorie_NC",
+            //     "com.atlassian.jira.plugin.system.customfieldtypes:select",
+            //     "ADN_NC Categorie_NC",
+            //     ["Services", "Produit", "SMQ"]
+            //   );
+            //   //Creation des screens
+            //   await getallscreenscheme();
+            //   await getallissuetype();
+            //   await createScreen("NC Project");
+            //   await createScreenScheme("NC Project Scheme");
+            //   await CreateIssueTypeScreenSchemeCAPANC("NC/CAPA issue type screen scheme");
+            //   await screentab("Identification et Enregistrement");
+            //   await screentab("Cause identifiées");
+            //   await screentab("Risques Analysés");
+            //   await screentab("Traitement");
+            //   await screentab("Validation");
+            //   await getalltabs("NC Project");
+            //   await getfieldsNC();
+            //   await addFieldToScreenTab(screenid, Onglet[1], "summary");
+            //   await addFieldToScreenTab(screenid, Onglet[1], "description");
+            //   await addFieldToScreenTab(screenid, Onglet[1], "assignee");
+            //   await addFieldToScreenTab(screenid, Onglet[4], "attachment");
+            //   await addFieldToScreenTab(screenid, Onglet[4], "issuelinks");
+            // }
+            // catch (e) {
+            //   console.log(e);
+            // }
+            // // créaction du workflow
+            // await createWorkflow("Workflow NC");
+            // // créaction du workflow scheme
+            // await createWorkflowScheme("Workflow Scheme NC");
+            // try {
+            //   await AssignIssueTypeScreenToProject(project, "NC/CAPA issue type screen scheme");
+            // }
+            // catch (e) {
+            //   console.log("AssignIssueTypeScreenToProject", e);
+            // }
+            // try {
+            //   await AssignWorkflowSchemeToProject(project, "Workflow Scheme NC");
+            // }
+            // catch (e) {
+            //   console.log("AssignWorkflowSchemeToProject", e);
+            // }
+          }
+        }
+      >
+      <Button text="issue type" onClick={async () => {
+        console.log("create");
+        await createIssueType("Issue Type NC");
               // creation de l'issue type scheme
               await createIssueTypeSchemeCAPANC("Kanban Issue type Scheme CAPA/NC", "Issue Type CAPA", "Issue Type NC");
               await AssignIssueTypeSchemeToProject(project, "Kanban Issue type Scheme CAPA/NC");
-              //creation des fields
-              await CreateCustomField(
+      }} />
+      <Button text="fields" onClick={async () => {
+        await CreateCustomField(
+                "Description",
+                "com.atlassian.jira.plugin.system.customfieldtypes:textarea",
+                "ADN_NC Description"
+        );
+        await CreateCustomField(
+                "Catégorie de NC",
+                "com.atlassian.jira.plugin.system.customfieldtypes:select",
+                "ADN_Catégorie de NC",
+                ["Services", "Produit", "SMQ"]
+
+        );
+        await CreateCustomField(
+                "Description",
+                "com.atlassian.jira.plugin.system.customfieldtypes:textarea",
+                "ADN_NC Description"
+        );
+        await CreateCustomField(
+                "Data",
+                "com.atlassian.jira.plugin.system.customfieldtypes:textfield",
+                "ADN_NC Data"
+        );
+        await CreateCustomField(
+                "date et heure",
+                "com.atlassian.jira.plugin.system.customfieldtypes:datetime",
+                "ADN_NC date et heure"
+        );
+        await CreateCustomField(
+                "Type du DM",
+                "com.atlassian.jira.plugin.system.customfieldtypes:select",
+                "ADN_NC Type du DM",
+                ["sonde", "respirateur", "prothese"]
+        );
+        await CreateCustomField(
+                "Marque",
+                "com.atlassian.jira.plugin.system.customfieldtypes:select",
+                "ADN_NC Marque",
+                ["philips", "Mindray", "Chison", "toshiba"]
+        );
+        await CreateCustomField(
+                "Marque",
+                "com.atlassian.jira.plugin.system.customfieldtypes:select",
+                "ADN_NC Marque",
+                ["philips", "Mindray", "Chison", "toshiba"]
+        );
+        await CreateCustomField(
+                "Référence du produit",
+                "com.atlassian.jira.plugin.system.customfieldtypes:textarea",
+                "ADN_NC Référence du produit",
+        );
+        await CreateCustomField(
+                "Désignation",
+                "com.atlassian.jira.plugin.system.customfieldtypes:textarea",
+                "ADN_NC Désignation",
+        );
+        await CreateCustomField(
+                "Numéro de lot",
+                "com.atlassian.jira.plugin.system.customfieldtypes:textarea",
+                "ADN_NC Numéro de lot",
+        );
+        await CreateCustomField(
+                "Date de fabrication",
+                "com.atlassian.jira.plugin.system.customfieldtypes:datetime",
+                "ADN_NC Date de fabrication"
+        );
+        await CreateCustomField(
+                "Quantité non conforme",
+                "com.atlassian.jira.plugin.system.customfieldtypes:number",
+                "ADN_NC Quantité non conforme"
+        );
+        //champ a choix multiple
+        await CreateCustomField(
+                "Type de non conformité",
+                "com.atlassian.jira.plugin.system.customfieldtypes:multiselect",
+                "ADN_NC Type de non conformité",
+                ["performance", "service", "qualité"]
+        );
+      }} />
+      <Button text="assign field screen" onClick={async () => {
+        await getfieldsNC();
+      }} />
+      <Button text="Custom Field" onClick={async () => {
+         await CreateCustomField(
                 "Cause(s) identifiée(s)",
                 "com.atlassian.jira.plugin.system.customfieldtypes:textarea",
                 "ADN_NC Cause(s) identifiée(s)"
@@ -209,47 +392,62 @@ const App = () => {
                 "ADN_NC Categorie_NC",
                 ["Services", "Produit", "SMQ"]
               );
-              // Creation des screens
-              await getallscreenscheme();
+        console.log("create");
+      }} />
+      <Button text="screen" onClick={async () => {
+        console.log("create");
+        console.log("1");
+        await getallscreenscheme();
+        console.log("2");
               await getallissuetype();
+              console.log("3");
               await createScreen("NC Project");
+              console.log("4");
               await createScreenScheme("NC Project Scheme");
+              console.log("5");
               await CreateIssueTypeScreenSchemeCAPANC("NC/CAPA issue type screen scheme");
-              await screentab("Identification et Enregistrement");
+              console.log("6");
+              await screentab("Généralités");
+              console.log("7");
               await screentab("Cause identifiées");
+              console.log("8");
               await screentab("Risques Analysés");
+              console.log("9");
               await screentab("Traitement");
+              console.log("10");
               await screentab("Validation");
-              await getalltabs("NC Project");
+              console.log("11");
+              
+      }} />
+      <Button text="scheme" onClick={async () => {  
+        console.log("create");
+        await getalltabs("NC Project");
+              console.log("12");
               await getfieldsNC();
+              console.log("13");
               await addFieldToScreenTab(screenid, Onglet[1], "summary");
+              console.log("14");
               await addFieldToScreenTab(screenid, Onglet[1], "description");
+              console.log("15");
               await addFieldToScreenTab(screenid, Onglet[1], "assignee");
-              await addFieldToScreenTab(screenid, Onglet[4], "attachment");
-              await addFieldToScreenTab(screenid, Onglet[4], "issuelinks");
-            }
-            catch (e) {
-              console.log(e);
-            }
-            // créaction du workflow
-            await createWorkflow("Workflow NC");
+              console.log("16");
+              console.log("17");
+              console.log("18");
+      }} />
+
+      <Button text="workflow" onClick={async () => {
+        console.log("create");
+         // créaction du workflow
+         await createWorkflow("Workflow NC");
             // créaction du workflow scheme
             await createWorkflowScheme("Workflow Scheme NC");
-            try {
-              await AssignIssueTypeScreenToProject(project, "NC/CAPA issue type screen scheme");
-            }
-            catch (e) {
-              console.log("AssignIssueTypeScreenToProject", e);
-            }
-            try {
-              await AssignWorkflowSchemeToProject(project, "Workflow Scheme NC");
-            }
-            catch (e) {
-              console.log("AssignWorkflowSchemeToProject", e);
-            }
-          }
-        }
-      >
+            await AssignWorkflowSchemeToProject(project, "Workflow Scheme NC");
+      }} />
+      <Button text="asssign" onClick={async () => {
+        console.log("create");
+        await AssignIssueTypeScreenToProject(project, "NC/CAPA issue type screen scheme");
+      }} />
+
         <Select label="Select Project" name="project">
           {options.map((option) => (
             <Option value={option.id} label={option.name} />
@@ -750,7 +948,7 @@ async function createScreenScheme(name) {
     console.log(`Screen scheme created`);
   }
 }
-async function getallscreen(name) {
+async function getallscreen() {
   const response = await api.asUser().requestJira(route`/rest/api/3/screens`, {
     headers: {
       'Accept': 'application/json'
@@ -762,7 +960,10 @@ async function getallscreen(name) {
   }
   else {
     console.log(`Screen created`);
+    console.log(response.json());
   }
+  screens = await response.json();
+  return screens;
 }
 
 
@@ -915,7 +1116,8 @@ async function getallscreenscheme() {
 }
 async function getalltabs(name) {
   if (!screenid) {
-    const screens = await getallscreen();
+    screens = await getallscreen();
+    console.log(`screens ` + screens);
     const screen = screens.values.find((screen) => screen.name === name);
     screenid = screen ? screen.id : null;
   }
@@ -935,7 +1137,11 @@ async function getalltabs(name) {
 }
 
 async function AssignIssueTypeScreenToProject(project, IssuetypeScreenScheme) {
-  if (IssueTypeScreenSchemeID.id == undefined) {
+  console.log(project);
+  if (project == 0 ){
+    project = 10003;
+  }
+  if (IssuetypeScreenScheme.id == undefined) {
     const response = await api
       .asUser()
       .requestJira(route`/rest/api/2/issuetypescreenscheme`, {
@@ -944,6 +1150,7 @@ async function AssignIssueTypeScreenToProject(project, IssuetypeScreenScheme) {
         },
       });
     IssueTypeScreenSchemeID = await response.json();
+    console.log(response.json());
     for (const issuetypescreenscheme of IssueTypeScreenSchemeID.values) {
       if (issuetypescreenscheme.name == IssuetypeScreenScheme) {
         IssueTypeScreenSchemeID.id = issuetypescreenscheme.id;
@@ -955,6 +1162,7 @@ async function AssignIssueTypeScreenToProject(project, IssuetypeScreenScheme) {
     issueTypeScreenSchemeId: IssueTypeScreenSchemeID.id,
     projectId: project,
   });
+  console.log(bodyData);
   const response = await api
     .asUser()
     .requestJira(route`/rest/api/3/issuetypescreenscheme/project`, {
@@ -966,6 +1174,7 @@ async function AssignIssueTypeScreenToProject(project, IssuetypeScreenScheme) {
       body: bodyData,
     });
   console.log(`Response AssignIssueTypeScreenToProject `);
+  console.log(response);
 }
 
 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ FIELDS FUNCTIONS @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -977,27 +1186,65 @@ async function getfieldsNC() {
   });
   const array_json = await response.json();
   // Ajouter chaque elements de array_json dans un tableau json
-  const json = [];
   for (const result of array_json) {
-    json.push(result.id);
-    switch (result.name) {
-      case "Cause(s) identifiée(s)":
+    if(result.name == "Cause(s) identifiée(s)"){
         await addFieldToScreenTab(screenid, Onglet[2], result.id);
-      case "Pôle de competence":
+      }
+    if(result.name == "Pôle de competence"){
         await addFieldToScreenTab(screenid, Onglet[2], result.id);
-      case "Responsable Analyse":
+      }
+    if(result.name == "Responsable Analyse"){
+        await addFieldToScreenTab(screenid, Onglet[2], result.id);
+      }
+    if(result.name == "Risque"){
         await addFieldToScreenTab(screenid, Onglet[3], result.id);
-      case "Risque":
+      }
+    if(result.name == "Besoin CAPA"){
         await addFieldToScreenTab(screenid, Onglet[3], result.id);
-      case "Besoin CAPA":
-        await addFieldToScreenTab(screenid, Onglet[3], result.id);
-      case "Action (s) réalisée(s) hors CAPA / Justification":
+      }
+    if(result.name == "Action (s) réalisée(s) hors CAPA / Justification"){
         await addFieldToScreenTab(screenid, Onglet[4], result.id);
-      case "Responsable validation chef de pôle":
+      }
+    if(result.name == "Responsable validation chef de pôle"){
         await addFieldToScreenTab(screenid, Onglet[5], result.id);
-      case "Responsable validation QA":
+      }
+    if(result.name == "Responsable validation QA"){
         await addFieldToScreenTab(screenid, Onglet[5], result.id);
-      case "Categorie_NC":
+      }
+    if(result.name == "Categorie_NC"){
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      }
+    if(result.name == "Data"){
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      }
+    if(result.name == "Date et heure"){
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      }
+    if(result.name == "Type du DM"){
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      }
+    if(result.name == "Marque"){
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      }
+    if(result.name == "Référence du produit"){
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      }
+    if(result.name == "Désignation"){
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      }
+    if(result.name == "Numéro de lot"){
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      }
+    if(result.name == "Date de fabrication"){
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      }
+    if(result.name == "Quantité non conforme"){
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      }
+    if(result.name == "Type de NC"){
+        await addFieldToScreenTab(screenid, Onglet[1], result.id);
+      }
+    if(result.name == "Le responsable qualité"){
         await addFieldToScreenTab(screenid, Onglet[1], result.id);
     }
   }
