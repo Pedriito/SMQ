@@ -35,6 +35,7 @@ let issueTypeIdCAPA;
 let issueTypeIdNC;
 let ScreenSchemeidNC;
 let ScreenSchemeidCAPA;
+let Customfield = [];
 
 const App = () => {
   const [options, setOptions] = useState([]);
@@ -42,6 +43,7 @@ const App = () => {
     await getAllProject().then((data) => {
       setOptions(data);
     });
+    await getCustomField();
   }, []);
 
   return (
@@ -427,6 +429,24 @@ async function getallissuetype() {
   console.log(`issue type found`);
 }
 // WORKFLOW FUNCTIONS
+async function getCustomField() {
+  const response = await api.asUser().requestJira(route`/rest/api/3/field/search?type=custom`, {
+    headers: {
+      Accept: "application/json",
+    },
+  });
+  const custom = await response.json();
+  for (const result of custom.values) {
+    //regarde si la description contient "ADN_NC"
+    if (result.description.includes('ADN_NC')) {
+      Customfield.push({ [result.name] : result.id})
+      
+}
+  }
+  console.log(Customfield)
+}
+
+
 async function createWorkflow(name) {
 
   var bodyData = JSON.stringify({
